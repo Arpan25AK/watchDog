@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-public class Website {
+public class Websites {
 
     private Integer id;
     private String url;

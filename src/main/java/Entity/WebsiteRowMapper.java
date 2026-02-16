@@ -5,10 +5,10 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class WebsiteRowMapper implements RowMapper<Website> {
+public class WebsiteRowMapper implements RowMapper<Websites> {
     @Override
-    public Website mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Website website = new Website();
+    public Websites mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Websites website = new Websites();
 
         website.setId(rs.getInt("id"));
         website.setUrl(rs.getString("url"));
