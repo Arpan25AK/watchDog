@@ -14,8 +14,11 @@ public class WebsiteRowMapper implements RowMapper<Websites> {
         website.setUrl(rs.getString("url"));
         website.setSiteName(rs.getString("site_Name"));
         website.setActive(rs.getBoolean("active"));
-        website.setCreatedAt(rs.getTimestamp("created_At").toLocalDateTime());
-
+        int code = rs.getInt("website_status");
+        website.setStatusText(code == 200 ? "up" : "down");
+        if (rs.getTimestamp("created_at") != null) {
+            website.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        }
         return website;
     }
 }

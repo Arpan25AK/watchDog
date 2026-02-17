@@ -3,8 +3,8 @@ services:
     image: postgres:15-alpine
     container_name: website_checker_postgres
     environment:
-      POSTGRES_USER: myuser
-      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: rise
+      POSTGRES_PASSWORD: password
       POSTGRES_DB: website_checker_db
     ports:
       - "5432:5432"

@@ -3,7 +3,7 @@ spring:
     name: watchDog
   datasource:
     # Connects to the local database we will define in the docker-compose file below
-    url: jdbc:postgresql://localhost:5434/watchdog
+    url: jdbc:postgresql://localhost:5432/website_checker_db
     username: rise
     password: password
     driver-class-name: org.postgresql.Driver

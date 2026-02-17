@@ -36,6 +36,7 @@ public class WebsiteCheckService {
             }
             catch(Exception e){
                 statusCode = 500;
+                e.printStackTrace();
             }
 
             long endTime = System.currentTimeMillis();

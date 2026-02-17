@@ -10,7 +10,8 @@ public class Websites {
     private Integer id;
     private String url;
     private String siteName;
-    private Boolean Active;
+    private Boolean active;
+    private String statusText;
     private LocalDateTime createdAt;
 
 }
