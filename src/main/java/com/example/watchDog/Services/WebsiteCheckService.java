@@ -5,8 +5,11 @@ import com.example.watchDog.Repository.Repo;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;import java.util.concurrent.CompletableFuture;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class WebsiteCheckService {
@@ -25,7 +28,12 @@ public class WebsiteCheckService {
             List<Websites> activeSites = websiteRepo.findActive();
 
             for(Websites site : activeSites){
-                pinger.pingAndRecord(site);
+                pinger.pingSingleSite(site.getUrl()).thenAccept(result -> {
+                    int statusCode = result.contains("up") ? 200 : (result.contians("TIMEOUT") ? 504 : 500);
+
+                    websiteRepo.healthCheckLog(site.getId(), statusCode, 0);
+                    System.out.println("automated check completed for  :" + site.getUrl());
+                });
             }
         }
 
@@ -33,43 +41,24 @@ public class WebsiteCheckService {
             return websiteRepo.detailedHealthLog();
         }
 
-        public String pingSingleSite(String url){
-            long startTime = System.currentTimeMillis();
-            int statusCode;
 
-            try {
-                var response = restTemplate.getForEntity(url, String.class);
-                statusCode = response.getStatusCode().value();
-                long endTime = System.currentTimeMillis();
-                int responseTime = (int)(endTime - startTime);
-                return "URL :" + url + "websiteStatus :"  + statusCode + "responseTime :" + responseTime;
-            }
-            catch(Exception e){
-                statusCode = 500;
-                e.printStackTrace();
-                return "StatusCode :" +  statusCode + "website is not reachable";
-            }
-        }
 
         public List<String> pingMultipleSites(String combinedUrl){
-            String[] urls =  combinedUrl.split("\\+");
-            List<String> result = new ArrayList<>();
-
-            for(String url : urls){
-                result.add(pingSingleSite(url.trim()));
-            }
-            return result;
+            return Arrays.stream(combinedUrl.split("\\+"))
+                    .filter(url -> !url.isBlank())
+                    .map(String::trim)
+                    .map(pinger::pingSingleSite) // Start all pings in parallel
+                    .map(CompletableFuture::join) // Wait for them to finish (max 10s total)
+                    .collect(Collectors.toList());
         }
 
         public String pingAndSaveSite(String url){
             Websites site = websiteRepo.findOrCreate(url);
 
-            String result = pingSingleSite(url);
-
-            int StatusCode = result.contains("200") ? 200 : 500;
-
-            websiteRepo.healthCheckLog(site.getId(), StatusCode , 0);
-
-            return  "tested and saved" + result;
-        }
+            return pinger.pingSingleUrl(url).thenApply(result -> {
+                // 3. Extract status and save (handles auto-delete of old logs)
+                int statusCode = result.contains("UP") ? 200 : 500;
+                websiteRepo.healthCheckLog(site.getId(), statusCode, 0);
+                return result;
+            });
 }

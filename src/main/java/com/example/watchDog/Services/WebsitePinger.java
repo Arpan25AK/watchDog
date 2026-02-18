@@ -7,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class WebsitePinger {
 
@@ -17,25 +19,31 @@ public class WebsitePinger {
         this.websiteRepo = websiteRepo;
         this.restTemplate = restTemplate;
     }
+
     @Async
-    public void pingAndRecord(Websites site){
+    public CompletableFuture<String> pingSingleSite(String url){
         long startTime = System.currentTimeMillis();
         int statusCode;
+        String statusText;
 
         try {
-            var response = restTemplate.getForEntity(site.getUrl(), String.class);
+            var response = restTemplate.getForEntity(url, String.class);
             statusCode = response.getStatusCode().value();
+            statusText = "UP";
+        }catch(org.springframework.web.client.ResourceAccessException e){
+            statusCode = 504;
+            statusText = "DOWN (TIMEOUT)";
         }
         catch(Exception e){
             statusCode = 500;
-            e.printStackTrace();
+            statusText = "DOWN (ERROR)";
         }
 
         long endTime = System.currentTimeMillis();
-        int responseTime = (int)(endTime - startTime);
+        long duration = endTime - startTime;
+        String result = String.format("URL: %s | Status: %s (%d) | Time: %dms",
+                url, statusText, statusCode, duration);
 
-        websiteRepo.healthCheckLog(site.getId(),statusCode,responseTime);
-
-        System.out.println(site.getUrl() + " is being checked and" + " its response code is " + statusCode + " and its response time is "  + responseTime);
+        return CompletableFuture.completedFuture(result);
     }
 }
