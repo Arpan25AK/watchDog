@@ -27,7 +27,15 @@ public class repo {
 
     public List<Websites> findActive(){
         String sql = "SELECT * FROM  websites where active = True";
-        return jdbcTemplate.query(sql, new WebsiteRowMapper());
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            Websites website = new Websites();
+            website.setId(rs.getInt("id"));
+            website.setUrl(rs.getString("url"));
+            website.setSiteName(rs.getString("site_name"));
+            website.setActive(rs.getBoolean("active"));
+            // We skip website_status and created_at because we don't need them to ping the site!
+            return website;
+        });
     }
 
     public List<Websites> findDown(){
