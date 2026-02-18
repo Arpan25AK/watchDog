@@ -46,4 +46,8 @@ public class WebsiteCheckService {
 
             System.out.println(site.getUrl() + " is being checked and" + " its response code is " + statusCode + " and its response time is "  + responseTime);
         }
+
+        public List<Websites> getAllReports(){
+            return websiteRepo.detailedHealthLog();
+        }
 }

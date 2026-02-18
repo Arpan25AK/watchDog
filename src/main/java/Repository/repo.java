@@ -40,12 +40,12 @@ public class repo {
         jdbcTemplate.update(sql, website_id, website_status, response_time_ms);
     }
 
-    public void  detailedHealthLog(){
+    public List<Websites>  detailedHealthLog(){
         String sql = "select w.id, w.url, w.site_name," +
                 " CASE when h.website_status = 200 then 'up' else 'down' end as status_code," +
                 " h.response_time_ms from  websites as w join health_check" +
                 " as h on w.id = h.website_id " +
                 "order by h.created_at desc;";
-        jdbcTemplate.update(sql, new WebsiteRowMapper());
+        return jdbcTemplate.query(sql, new WebsiteRowMapper());
     }
 }
