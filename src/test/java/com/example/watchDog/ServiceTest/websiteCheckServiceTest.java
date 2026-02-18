@@ -1,14 +1,13 @@
 package com.example.watchDog.ServiceTest;
 
-import Entity.Websites;
-import Repository.repo;
-import Services.WebsiteCheckService;
+import com.example.watchDog.Entity.Websites;
+import com.example.watchDog.Repository.Repo;
+import com.example.watchDog.Services.WebsiteCheckService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -23,7 +22,7 @@ import static org.mockito.Mockito.times;
 @ExtendWith(MockitoExtension.class)
 public class websiteCheckServiceTest {
     @Mock
-    private repo websiteRepo;
+    private Repo websiteRepo;
 
     @Mock
     private RestTemplate restTemplate;

@@ -1,4 +1,4 @@
-package Entity;
+package com.example.watchDog.Entity;
 
 import org.springframework.jdbc.core.RowMapper;
 
