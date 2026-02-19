@@ -43,7 +43,7 @@ public class WebsiteCheckService {
 
 
     public List<String> pingMultipleSites(String combinedUrl) {
-        return Arrays.stream(combinedUrl.split("\\+"))
+        return Arrays.stream(combinedUrl.split("\\s+"))
                 .filter(url -> !url.isBlank())
                 .map(String::trim)
                 .map(pinger::pingSingleSite) // Start all pings in parallel
