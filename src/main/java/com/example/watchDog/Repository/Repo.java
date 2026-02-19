@@ -47,10 +47,7 @@ public class Repo {
         String sql = "INSERT INTO health_check (website_id, website_status, response_time_ms) VALUES(?,?,?)";
         jdbcTemplate.update(sql, website_id, website_status, response_time_ms);
 
-        String delSql = "DELETE FROM health-check"+
-                "WHERE website_id = ?" +
-                "AND created_at <" +
-                "(SELECT MAX(created_at) FROM health-check WHERE website_id = ?";
+        String delSql = "DELETE FROM health_check WHERE website_id = ? AND created_at < (SELECT MAX(created_at) FROM health_check WHERE website_id = ?)";
         jdbcTemplate.update(delSql , website_id, website_id);
     }
 
@@ -77,7 +74,7 @@ public class Repo {
         }
 
         String insertSql = "INSERT INTO Websites(url, site_name, active) VALUES(?, ?, true) RETURNING id";
-        Integer newId =jdbcTemplate.queryForObject(insertSql, Integer.class, url);
+        Integer newId =jdbcTemplate.queryForObject(insertSql, Integer.class, url, url);
 
         Websites newSite = new Websites();
         newSite.setId(newId);
